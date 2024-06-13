@@ -4,7 +4,7 @@
 
 **IDE:** Arduino IDE  
 **Language:** C/C++  
-**Library:** Wire.h, Adafruit_GFX.h, Adafruit_LEDBackpack.h  
+**Libraries:** Wire.h, Adafruit_GFX.h, Adafruit_LEDBackpack.h  
 **MCU:** Arduino Leonardo R3  
 **Shield:** enPiT Shield  
 

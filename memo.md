@@ -1,4 +1,4 @@
-[# メモ
+# メモ
 
 - [enPiT Shield 関係](#enPiT-Shield-関係)
 - [Adafruit_LEDBackpack ライブラリ関係](#Adafruit_LEDBackpack-ライブラリ関係)
@@ -13,7 +13,7 @@
 
 ## Adafruit_LEDBackpack ライブラリ関係
 
-[Adafruit_LEDBackpack](https://github.com/adafruit/Adafruit_LED_Backpack/)
+Adafruit_LEDBackpack の GitHub ページは [https://github.com/adafruit/Adafruit_LED_Backpack/](https://github.com/adafruit/Adafruit_LED_Backpack/)
 
 ### コンストラクタ
 
@@ -288,4 +288,3 @@ matrix.writeDisplay();
 ```
 
 ![Colon2](images/cl2.png)
-](https://github.com/adafruit/Adafruit_LED_Backpack/)

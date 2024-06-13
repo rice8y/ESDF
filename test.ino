@@ -3,6 +3,7 @@
 #include "Adafruit_LEDBackpack.h"
 
 Adafruit_7segment matrix = Adafruit_7segment();
+const int ledPin = 5;
 
 void setup() {
 #ifndef __AVR_ATtiny85__
@@ -14,10 +15,7 @@ void setup() {
 
 void loop() {
   initTimer();
-  delay(3000);
-  matrix.print("Go");
-  matrix.writeDisplay();
-  delay(2000);
+  delay(1000);
   setTimer(1, 30);
 }
 
@@ -31,6 +29,9 @@ void initTimer() {
 }
 
 void setTimer(int mm, int ss) {
+  if (mm > 99 || ss > 59 || mm < 0 || ss < 0) {
+    return;
+  }
   for (int m = mm; m >= 0; m--) {
     if (m == mm) {
       for (int s = ss; s >= 0; s--) {
@@ -52,7 +53,12 @@ void setTimer(int mm, int ss) {
       }
     }
   }
-  matrix.print("Good");
-  matrix.writeDisplay();
-  delay(10000);
+  finish();
+}
+
+void finish() {
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, HIGH);
+  delay(5000);
+  digitalWrite(ledPin, LOW);
 }

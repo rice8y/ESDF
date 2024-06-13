@@ -71,6 +71,9 @@ void clear(void)
 matrix.clear();
 ```
 
+>[!NOTE]
+> 基本的なメソッドには他にも, `write()` や `blinkRate()` , `setBrightness()` , `setDisplayState()` 等が存在するがここでは省略する.
+
 ### 数値表示
 
 #### print (数値 Ver.)
@@ -131,9 +134,8 @@ matrix.writeDisplay();
 
 `digits` に `3` を指定しているため, 小数第3位まで表示されている.
 
-```{note}
-print 系のメソッドには, 改行を含める `println()` や 実数を表示する `printNumber()` , 整数を表示する `printFloat()` が存在するがここでは省略する.
-```
+> [!NOTE]
+> print 系のメソッドには, 改行を含める `println()` や 実数を表示する `printNumber()` , 整数を表示する `printFloat()` が存在するがここでは省略する.
 
 #### writeDigitNum
 
@@ -263,6 +265,18 @@ matrix.writeColon();
 ![Colon](images/cl.png)
 
 `:` のうち, 下側の点が表示されている.
+
+#### printError
+
+```cpp
+void printError(void)
+```
+
+使用例を以下に示す.
+
+![Error](images/error.png)
+
+エラー表記として `----` が表示されている.
 
 ### Unresolved
 

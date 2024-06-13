@@ -13,4 +13,4 @@
 
 ## Adafruit_LEDBackpack ライブラリ関係
 
-[Adafruit_LEDBackpack](https://github.com/adafruit/Adafruit_LED_Backpack/tree/master)
+[Adafruit_LEDBackpack](https://github.com/adafruit/Adafruit_LED_Backpack/)

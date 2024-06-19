@@ -9,5 +9,5 @@
 **Shield:** enPiT Shield  
 
 ### ファイル
-[テストファイル](test.ino)  
+[テストファイル](timer_eps.ino)  
 [メモ](memo.md)

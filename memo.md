@@ -5,11 +5,47 @@
 
 ## enPiT Shield 関係
 
-### LED の対応ピン
+### マッピング情報
 
-|LED0|LED1|LED2|LED3|
-|---|---|---|---|
-|D5|D6|D10|D11|
+>[!NOTE]
+>enPiT Shield の割り当てピンのみ.
+
+#### アナログピン
+
+|PIN|ALLOCATION|
+|---|---|
+|A0|SW0|
+|A1|SW1|
+|A2|N.C.|
+|A3|N.C.|
+|A4|N.C.|
+|A5|N.C.|
+
+#### デジタルピン
+
+|PIN|ALLOCATION|
+|---|---|
+|D0/RX|URAT 通信|
+|D1/TX|URAT 通信|
+|D2|N.C.|
+|D3|N.C.|
+|D4|N.C.|
+|D5|LED0|
+|D6|LED1|
+|D7|BUZZER|
+|D8|DIPSW4|
+|D9|DIPSW3|
+|D10|LED2|
+|D11|LED3|
+|D12|DIPSW2|
+|D13|DIPSW1|
+
+#### デフォルトピン
+
+|PIN|ALLOCATION|
+|---|---|
+|SDA|7SegLED, GROVE コネクト|
+|SCA|7SegLED, GROVEコネクト|
 
 ## Adafruit_LEDBackpack ライブラリ関係
 

@@ -8,7 +8,8 @@
 ### マッピング情報
 
 >[!NOTE]
->enPiT Shield の割り当てピンのみ.
+>enPiT Shield の割り当てピンのみ.  
+>Arduino Leonardo のピン配置：[https://docs.arduino.cc/resources/pinouts/A000057-full-pinout.pdf](https://docs.arduino.cc/resources/pinouts/A000057-full-pinout.pdf)
 
 #### アナログピン
 
@@ -45,11 +46,11 @@
 |PIN|ALLOCATION|
 |---|---|
 |SDA|7SegLED, GROVE コネクト|
-|SCA|7SegLED, GROVEコネクト|
+|SCL|7SegLED, GROVEコネクト|
 
 ## Adafruit_LEDBackpack ライブラリ関係
 
-Adafruit_LEDBackpack の GitHub ページは [https://github.com/adafruit/Adafruit_LED_Backpack/](https://github.com/adafruit/Adafruit_LED_Backpack/)
+Adafruit_LEDBackpack の GitHub ページ：[https://github.com/adafruit/Adafruit_LED_Backpack/](https://github.com/adafruit/Adafruit_LED_Backpack/)
 
 ### コンストラクタ
 

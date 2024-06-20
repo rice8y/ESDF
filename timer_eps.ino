@@ -5,7 +5,7 @@
 #define PUSH_SHORT 5
 #define PUSH_LONG 200
 const int duration = 1500;
-bool flag1 = false;
+int mode = 0;
 int cntSw0 = 0, cntSw1 = 0;
 int cntHigh0 = 0, cntHigh1 = 0;
 
@@ -17,26 +17,19 @@ void setup() {
   Serial.println("7 Segment Backpack Test");
 #endif
   matrix.begin(0x70);
-  pinMode(PIN_SW0, INPUT);
-  pinMode(PIN_SW1, INPUT);
-  pinMode(PIN_DIPSW1, INPUT);
-  pinMode(PIN_DIPSW2, INPUT);
-  pinMode(PIN_DIPSW3, INPUT);
-  pinMode(PIN_DIPSW4, INPUT);
-  pinMode(PIN_LED0, OUTPUT);
-  pinMode(PIN_LED1, OUTPUT);
-  pinMode(PIN_LED2, OUTPUT);
-  pinMode(PIN_LED3, OUTPUT);
+  initLeds();
+  initSws();
+  initDipsws();
   initTimer();
 }
 
 void loop() {
-  mode();
-  if (flag1) {
+  modeConverter();
+  if (mode == 1) {
     countPush();
     setDisplay(cntSw1, cntSw0);
   }
-  if (!flag1 && (cntSw0 > 0 || cntSw1 > 0)) {
+  if (mode == 0 && (cntSw0 > 0 || cntSw1 > 0)) {
     if (digitalRead(PIN_SW0) == HIGH) {
       cntHigh0++;
     } else {
@@ -49,13 +42,13 @@ void loop() {
   }
 }
 
-void mode() {
+void modeConverter() {
   if (stateDipsw() == "1000") {
     led(3);
-    flag1 = true;
+    mode = 1;
   } else {
     led(3, false);
-    flag1 = false;
+    mode = 0;
   }
 }
 
@@ -65,7 +58,9 @@ void countPush() {
       cntHigh0++;
     }
   } else {
-    if (cntHigh0 >= PUSH_SHORT) {
+    if (cntHigh0 >= PUSH_LONG) {
+      initTimer();
+    } else if (cntHigh0 >= PUSH_SHORT) {
       cntSw0++;
     }
     cntHigh0 = 0;

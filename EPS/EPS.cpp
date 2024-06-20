@@ -37,3 +37,25 @@ String stateDipsw()
   }
   return stateString;
 }
+
+void initLeds()
+{
+  pinMode(PIN_LED0, OUTPUT);
+  pinMode(PIN_LED1, OUTPUT);
+  pinMode(PIN_LED2, OUTPUT);
+  pinMode(PIN_LED3, OUTPUT);
+}
+
+void initDipsws()
+{
+  pinMode(PIN_DIPSW1, INPUT);
+  pinMode(PIN_DIPSW2, INPUT);
+  pinMode(PIN_DIPSW3, INPUT);
+  pinMode(PIN_DIPSW4, INPUT);
+}
+
+void initSws()
+{
+  pinMode(PIN_SW0, INPUT);
+  pinMode(PIN_SW1, INPUT);
+}

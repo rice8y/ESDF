@@ -9,5 +9,8 @@
 
 void led(int led, bool s = true);
 String stateDipsw();
+void initLeds();
+void initDipsws();
+void initSws();
 
 #endif

@@ -331,3 +331,39 @@ matrix.writeDisplay();
 
 >[!NOTE]
 >依存ライブラリ：EnpitShield.h
+
+#### led
+
+```cpp
+void led(int led, bool state = true)
+```
+
+使用例を以下に示す.
+
+```cpp
+led(0);  // LED0 が点灯
+led(0, false);  // LED0 が消灯
+```
+
+#### stateDipsw
+
+```cpp
+String stateDipsw(void)
+```
+
+使用例を以下に示す.
+
+```cpp
+String state = stateDipsw();
+Serial.print(state);  // DIPSW が 1000 ならば "1000" が返ってくる.
+```
+
+#### initLeds / initSws / initDipsws
+
+```cpp
+void initLeds(void)
+void initSws(void)
+void initDipsws(void)
+```
+
+入力部品なら `INPUT` , 出力部品なら `OUTPUT` で初期化するだけ.

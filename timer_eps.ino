@@ -1,144 +1,228 @@
 #include <Wire.h>
-#include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include "EPS.h"
+
 #define PUSH_SHORT 5
-#define PUSH_LONG 200
-const int duration = 1500;
-int mode = 0;
-int cntSw0 = 0, cntSw1 = 0;
+#define PUSH_LONG 100
+#define STEP 10
+
+int mm = 0, ss = 0;
+int m = 0, s = 0;
+int cnt = 0;
 int cntHigh0 = 0, cntHigh1 = 0;
+int buff0 = 0, buff1 = 0;
+int memory[4];
 
 Adafruit_7segment matrix = Adafruit_7segment();
 
 void setup() {
-#ifndef __AVR_ATtiny85__
-  Serial.begin(9600);
-  Serial.println("7 Segment Backpack Test");
-#endif
   matrix.begin(0x70);
+  Serial.begin(9600);
   initLeds();
-  initSws();
   initDipsws();
-  initTimer();
+  pinMode(PIN_BUZZER, OUTPUT);
+  for (int i = 0; i < 4; i++) {
+    memory[i] = 0;
+  }
 }
 
 void loop() {
-  modeConverter();
-  if (mode == 1) {
-    countPush();
-    setDisplay(cntSw1, cntSw0);
-  }
-  if (mode == 0 && (cntSw0 > 0 || cntSw1 > 0)) {
-    if (digitalRead(PIN_SW0) == HIGH) {
-      cntHigh0++;
-    } else {
-      if (cntHigh0 >= PUSH_SHORT) {
-        setTimer(cntSw1, cntSw0);
-        initTimer();
+  buffStates();
+  switch (stateDipsw()) {
+    case 0b1000:
+      setTime(&mm, &ss);
+      display(mm, ss);
+      break;
+    case 0b0100:
+      setTime(&m, &s);
+      display(m, s);
+      break;
+    case 0b0010:
+      setCount(&cnt);
+      displayCount(cnt);
+      break;
+    case 0b0001:
+      display(mm, ss);
+      if (digitalRead(PIN_SW0) == HIGH) {
+        cntHigh0++;
+      } else {
+        if (cntHigh0 >= PUSH_SHORT) {
+          doTimer();
+          initCondition();
+        }
+        cntHigh0 = 0;
       }
-      cntHigh0 = 0;
-    }
+      break;
+    case 0b1111:
+      if (digitalRead(PIN_SW0) == HIGH) {
+        cntHigh0++;
+      } else {
+        if (cntHigh0 >= PUSH_SHORT) {
+          reset();
+        }
+        cntHigh0 = 0;
+      }
+      break;
   }
+  delay(10);
 }
 
-void modeConverter() {
-  if (stateDipsw() == "1000") {
-    led(3);
-    mode = 1;
-  } else {
-    led(3, false);
-    mode = 0;
-  }
+void initCondition() {
+  mm = 0;
+  ss = 0;
+  m = 0;
+  s = 0;
+  cnt = 0;
 }
 
-void countPush() {
+void setTime(int *minutes, int *seconds) {
   if (digitalRead(PIN_SW0) == HIGH) {
-    if (cntHigh0 <= PUSH_LONG) {
-      cntHigh0++;
+    cntHigh0++;
+    if (cntHigh0 >= PUSH_LONG) {
+      (*seconds) += (cntHigh0 % STEP == 0);
     }
   } else {
-    if (cntHigh0 >= PUSH_LONG) {
-      initTimer();
-    } else if (cntHigh0 >= PUSH_SHORT) {
-      cntSw0++;
+    if (cntHigh0 >= PUSH_SHORT) {
+      (*seconds)++;
     }
     cntHigh0 = 0;
   }
   if (digitalRead(PIN_SW1) == HIGH) {
-    if (cntHigh1 <= PUSH_LONG) {
-      cntHigh1++;
+    cntHigh1++;
+    if (cntHigh1 >= PUSH_LONG) {
+      (*minutes) += (cntHigh1 % STEP == 0);
     }
   } else {
     if (cntHigh1 >= PUSH_SHORT) {
-      cntSw1++;
+      (*minutes)++;
     }
     cntHigh1 = 0;
   }
+
+  // if (reset()) {
+  //   *minutes = 0;
+  //   *seconds = 0;
+  // }
+  limit(minutes, seconds);
 }
 
-void initTimer() {
-  cntSw0 = 0;
-  cntSw1 = 0;
-  matrix.writeDigitNum(0, 0, false);
-  matrix.writeDigitNum(1, 0, false);
+void limit(int *m, int *s) {
+  if (*s >= 60) {
+    *m += 1;
+    *s = 0;
+  }
+  if ((*s) < 0) {
+    (*s) = 0;
+  }
+  if (*m > 99) {
+    *m = 99;
+  }
+  if ((*m) < 0) {
+    (*m) = 0;
+  }
+}
+
+void setCount(int *cnt) {
+  if (digitalRead(PIN_SW0) == HIGH) {
+    cntHigh0++;
+    if (cntHigh0 >= PUSH_LONG) {
+      (*cnt) += (cntHigh0 % STEP == 0);
+    }
+  } else {
+    if (cntHigh0 >= PUSH_SHORT) {
+      (*cnt)++;
+    }
+    cntHigh0 = 0;
+  }
+  if (digitalRead(PIN_SW1) == HIGH) {
+    cntHigh1++;
+    if (cntHigh1 >= PUSH_LONG) {
+      (*cnt)--;
+    }
+  } else {
+    if (cntHigh1 >= PUSH_SHORT) {
+      (*cnt)--;
+    }
+    cntHigh1 = 0;
+  }
+  if ((*cnt) > 9999) {
+    (*cnt) = 9999;
+  }
+  if ((*cnt) < 0) {
+    (*cnt) = 0;
+  }
+}
+
+void display(int minutes, int seconds) {
+  matrix.writeDigitNum(0, minutes / 10, false);
+  matrix.writeDigitNum(1, minutes % 10, false);
   matrix.writeDigitNum(2, 2, false);
-  matrix.writeDigitNum(3, 0, false);
-  matrix.writeDigitNum(4, 0, false);
+  matrix.writeDigitNum(3, seconds / 10, false);
+  matrix.writeDigitNum(4, seconds % 10, false);
   matrix.writeDisplay();
 }
 
-void setDisplay(int mm, int ss) {
-  if (mm > 99 || ss > 59 || mm < 0 || ss < 0) {
-    return;
-  }
-  if (ss < 10) {
-    matrix.writeDigitNum(4, ss);
-  } else {
-    matrix.writeDigitNum(3, ss / 10);
-    matrix.writeDigitNum(4, ss % 10);
-  }
-  if (mm < 10) {
-    matrix.writeDigitNum(1, mm);
-  } else {
-    matrix.writeDigitNum(0, mm / 10);
-    matrix.writeDigitNum(1, mm % 10);
-  }
+void displayCount(int cnt) {
+  matrix.print(cnt);
   matrix.writeDisplay();
 }
 
-void setTimer(int mm, int ss) {
-  if (mm > 99 || ss > 59 || mm < 0 || ss < 0) {
-    return;
+void timer(int *minutes, int *seconds, bool buzzer = true) {
+  buff0 = (*seconds);
+  buff1 = (*minutes);
+  while (1) {
+    display(*minutes, *seconds);
+    if ((*seconds)-- == 0) {
+      if ((*minutes)-- > 0) {
+        (*seconds) = 59;
+      } else {
+        break;
+      }
+    }
+    delay(1000);
   }
-  for (int m = mm; m >= 0; m--) {
-    if (m == mm) {
-      for (int s = ss; s >= 0; s--) {
-        matrix.writeDigitNum(0, m / 10);
-        matrix.writeDigitNum(1, m % 10);
-        matrix.writeDigitNum(3, s / 10);
-        matrix.writeDigitNum(4, s % 10);
-        matrix.writeDisplay();
-        if (m == 0 && s == 0) {
-          finish();
-        }
-        delay(1000);
-      }
-    } else {
-      for (int s = 59; s >= 0; s--) {
-        matrix.writeDigitNum(0, m / 10, false);
-        matrix.writeDigitNum(1, m % 10, false);
-        matrix.writeDigitNum(3, s / 10, false);
-        matrix.writeDigitNum(4, s % 10, false);
-        matrix.writeDisplay();
-        delay(1000);
-      }
+  if (buzzer) {
+    tone(PIN_BUZZER, 523, 500);
+  }
+  delay(1000);
+  display(*minutes, *seconds);
+  (*seconds) = buff0;
+  (*minutes) = buff1;
+}
+
+void doTimer() {
+  for (int i = 0; i <= cnt; i++) {
+    timer(&mm, &ss);
+    if (i != cnt) {
+      timer(&m, &s);
     }
   }
 }
 
-void finish() {
-  pinMode(PIN_BUZZER, OUTPUT);
-  tone(PIN_BUZZER, 600, duration);
-  delay(1000);
+void buffStates() {
+  int current = stateDipsw();
+  if (memory[3] != current) {
+    for (int i = 1; i < 4; i++) {
+      memory[i - 1] = memory[i];
+    }
+    memory[3] = current;
+  }
+  for (int i = 0; i < 4; i++) {
+    Serial.println(String(i) + ": " + String(memory[i]));
+  }
+}
+
+void reset() {
+  if (memory[0] == 0b1000 && memory[3] == 0b1111) {
+    mm = 0;
+    ss = 0;
+    display(mm, ss);
+  } else if (memory[0] == 0b0100 && memory[3] == 0b1111) {
+    m = 0;
+    s = 0;
+    display(m, s);
+  } else if (memory[0] == 0b0010 && memory[3] == 0b1111) {
+    cnt = 0;
+    displayCount(cnt);
+  }
 }

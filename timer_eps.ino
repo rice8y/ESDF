@@ -11,7 +11,9 @@ int m = 0, s = 0;
 int cnt = 0;
 int cntHigh0 = 0, cntHigh1 = 0;
 int buff0 = 0, buff1 = 0;
+int startFlag = false;
 int memory[4];
+int resetFlag = false;
 
 Adafruit_7segment matrix = Adafruit_7segment();
 
@@ -47,10 +49,13 @@ void loop() {
         cntHigh0++;
       } else {
         if (cntHigh0 >= PUSH_SHORT) {
-          doTimer();
-          initCondition();
+          startFlag = true;
         }
         cntHigh0 = 0;
+      }
+      if (startFlag) {
+        doTimer();
+        initCondition();
       }
       break;
     case 0b1111:
@@ -99,10 +104,6 @@ void setTime(int *minutes, int *seconds) {
     cntHigh1 = 0;
   }
 
-  // if (reset()) {
-  //   *minutes = 0;
-  //   *seconds = 0;
-  // }
   limit(minutes, seconds);
 }
 
@@ -179,9 +180,12 @@ void timer(int *minutes, int *seconds, bool buzzer = true) {
         break;
       }
     }
-    delay(1000);
+    for (int i = 0; i < 10; i++) {
+      stop();
+      delay(100);
+    }
   }
-  if (buzzer) {
+  if (buzzer && !resetFlag) {
     tone(PIN_BUZZER, 523, 500);
   }
   delay(1000);
@@ -207,9 +211,6 @@ void buffStates() {
     }
     memory[3] = current;
   }
-  for (int i = 0; i < 4; i++) {
-    Serial.println(String(i) + ": " + String(memory[i]));
-  }
 }
 
 void reset() {
@@ -224,5 +225,37 @@ void reset() {
   } else if (memory[0] == 0b0010 && memory[3] == 0b1111) {
     cnt = 0;
     displayCount(cnt);
+  }
+}
+
+void stop() {
+  if (digitalRead(PIN_SW1) == HIGH) {
+    cntHigh1 += 5;
+  } else {
+    if (cntHigh1 >= PUSH_SHORT) {
+      cntHigh1 = 0;
+      while (1) {
+        if (digitalRead(PIN_SW1) == HIGH) {
+          cntHigh1++;
+        } else {
+          if (cntHigh1 >= PUSH_SHORT) {
+            break;
+          } else {
+            if (digitalRead(PIN_SW0) == HIGH) {
+              cntHigh0++;
+            } else {
+              if (cntHigh0 >= PUSH_SHORT) {
+                initCondition();
+                display(mm, ss);
+                resetFlag = true;
+                break;
+              }
+              cntHigh0 = 0;
+            }
+          }
+        }
+      }
+      cntHigh1 = 0;
+    }
   }
 }

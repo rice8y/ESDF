@@ -411,7 +411,7 @@ void loop() {
 }
 ```
 
-上記は, Cメジャースケールの例. 
+上記は, Cメジャースケールの例.  [[音声ファイル]](audios/cmajor.mp3)
 
 ![c-major](images/cmajor.png)
 

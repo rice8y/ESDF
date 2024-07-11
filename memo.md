@@ -400,7 +400,7 @@ note test[] = {
   {nb5, 4},
   {nc5, 4},
   {fine, 1}
-}
+};
 
 void setup() {
   pinMode(PIN_BUZZER, OUTPUT);

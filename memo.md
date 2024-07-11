@@ -349,14 +349,22 @@ led(0, false);  // LED0 が消灯
 #### stateDipsw
 
 ```cpp
-String stateDipsw(void)
+int stateDipsw(void)
 ```
 
 使用例を以下に示す.
 
 ```cpp
-String state = stateDipsw();
-Serial.print(state);  // DIPSW が 1000 ならば "1000" が返ってくる.
+int state = stateDipsw();
+Serial.print(state);  // DIPSW が 1000 ならば 8 が返ってくる.
+```
+
+上記の例では, 8が返ってくるが, これは0x8であり, 0b1000である. つまり, 判定の際には以下のようにする.
+
+```cpp
+if (stateDipsw() == 0b1000) {
+  led(0);
+}
 ```
 
 #### initLeds / initSws / initDipsws
@@ -371,5 +379,40 @@ void initDipsws(void)
 
 ## Music ライブラリ関係
 
->[!NOTE]
->Writing...
+#### playMusic
+
+```cpp
+void playMusic(int PIN, note notes[], int bpm)
+```
+
+使用例を以下に示す.
+
+```cpp
+#include "Music.h"
+#define PIN_BUZZER 7
+note test[] = {
+  {nc4, 4},
+  {nd4, 4},
+  {ne4, 4},
+  {nf4, 4},
+  {ng4, 4},
+  {na5, 4},
+  {nb5, 4},
+  {nc5, 4},
+  {fine, 1}
+}
+
+void setup() {
+  pinMode(PIN_BUZZER, OUTPUT);
+  playMusic(PIN_BUZZER, test, 120);
+}
+
+void loop() {
+}
+```
+
+上記は, Cメジャースケールの例.
+
+>[!WARNING]
+>音名はドイツ式表記に従うが, Arduinoの予約語との衝突回避のため, プレフィックス n をつけること.
+>例：C4はnc4, C4is(C4#)はnc4s.

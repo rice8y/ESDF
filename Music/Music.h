@@ -140,5 +140,8 @@ struct note
 };
 
 void playMusic(int PIN, note notes[], int bpm);
+extern note twinkle[];
+extern note alert_1[];
+extern note alert_2[];
 
 #endif

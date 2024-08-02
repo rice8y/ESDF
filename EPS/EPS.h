@@ -8,7 +8,7 @@
 #define PUSH_SHORT 100
 
 void led(int led, bool s = true);
-String stateDipsw();
+int stateDipsw();
 void initLeds();
 void initDipsws();
 void initSws();
